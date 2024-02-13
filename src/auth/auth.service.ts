@@ -78,7 +78,14 @@ export class AuthService {
                 userAgent: agent,
             },
         });
-        const token = _token?.token ?? null;
+        let token: string;
+
+        if (_token) {
+            token = _token.token;
+        } else {
+            // If no token found, generate a new one
+            token = v4();
+        }
         return this.prismaService.token.upsert({
             where: { token },
             update: {
