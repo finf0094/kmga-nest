@@ -43,3 +43,85 @@ enum Provider {
   GOOGLE
   YANDEX
 }
+
+model Quiz {
+  id          String     @id @default(uuid())
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  title       String
+  description String     @default("No Description")
+  tags        String[]
+  status      QuizStatus @default(DRAFT)
+  questions   Question[]
+  Session     Session[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id             String           @id @default(uuid())
+  title          String
+  options        Option[]
+  quizId         String           @map("quiz_id")
+  Quiz           Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  SelectedAnswer SelectedAnswer[]
+
+  @@map("questions")
+}
+
+model Option {
+  id         String    @id @default(uuid())
+  value      String
+  weight     Int       @default(0)
+  questionId String?
+  Question   Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+model Session {
+  id             String           @id @default(uuid())
+  createdAt      DateTime         @default(now()) @map("created_at")
+  quizId         String           @map("quiz_id")
+  quiz           Quiz             @relation(fields: [quizId], references: [id])
+  email          Email            @relation(fields: [emailId], references: [id])
+  SelectedAnswer SelectedAnswer[]
+
+  startTime DateTime?
+  endTime   DateTime?
+  status    SessionStatus
+  score     Float
+  emailId   String
+}
+
+model SelectedAnswer {
+  id         String   @id @default(uuid())
+  sessionId  String
+  session    Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  answerId   String
+
+  @@unique([sessionId, questionId])
+  @@map("selected_answers")
+}
+
+model Email {
+  id      String    @id @default(uuid())
+  email   String    @unique
+  Session Session[]
+
+  @@map("emails")
+}
+
+enum QuizStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum SessionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}

@@ -21,7 +21,12 @@
       "@prisma/*": ["src/prisma/*"],
       "@user/*": ["src/user/*"],
       "@common/*": ["libs/common/src/*"],
-      "@auth/*": ["src/auth/*"]
+      "@auth/*": ["src/auth/*"],
+      "@mail/*": ["src/mail/*"],
+      "@statistics/*": ["src/statistics/*"],
+      "@quiz/*": ["src/quiz/*"],
+      "@question/*": ["src/question/*"],
+      "@session/*": ["src/session/*"]
     }
   }
 }

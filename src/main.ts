@@ -7,6 +7,11 @@ async function bootstrap() {
     app.use(cookieParser());
     app.setGlobalPrefix('api');
     app.useGlobalInterceptors();
+    app.enableCors({
+        origin: ['https://thriveread.com/', 'http://localhost:5173/', 'http://yourclient.com'],
+        credentials: true,
+    });
     await app.listen(3000);
 }
+
 bootstrap();
