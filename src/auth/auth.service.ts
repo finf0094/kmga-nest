@@ -68,7 +68,7 @@ export class AuthService {
                 roles: user.roles,
             });
         const refreshToken = await this.getRefreshToken(user.id, agent);
-        return { accessToken, refreshToken };
+        return { accessToken, refreshToken, user };
     }
 
     private async getRefreshToken(userId: string, agent: string): Promise<Token> {

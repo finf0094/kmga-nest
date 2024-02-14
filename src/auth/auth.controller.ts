@@ -18,7 +18,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { UserResponse } from '@user/responses';
 import { Request, Response } from 'express';
-import { map, mergeMap, tap } from 'rxjs';
+import { map, mergeMap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto } from './dto';
 import { GoogleGuard } from './guargs/google.guard';
@@ -86,14 +86,15 @@ export class AuthController {
         if (!tokens) {
             throw new UnauthorizedException();
         }
+        const { accessToken, refreshToken, user } = tokens;
         res.cookie(REFRESH_TOKEN, tokens.refreshToken.token, {
             httpOnly: true,
             sameSite: 'lax',
-            expires: new Date(tokens.refreshToken.exp),
+            expires: new Date(refreshToken.exp),
             secure: this.configService.get('NODE_ENV', 'development') === 'production',
             path: '/',
         });
-        res.status(HttpStatus.CREATED).json({ accessToken: tokens.accessToken });
+        res.status(HttpStatus.CREATED).json({ accessToken, user: new UserResponse(user) });
     }
 
     @UseGuards(GoogleGuard)
