@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { MailService } from '@mail/mail.service';
-import { SelectedAnswer, Session, SessionStatus } from '@prisma/client';
+import { Prisma, SelectedAnswer, Session, SessionStatus } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class SessionService {
@@ -24,6 +25,28 @@ export class SessionService {
         }
 
         return session;
+    }
+
+    async getAllSessions(page: number, perPage: number, search: string, status: SessionStatus | null) {
+        const paginate = createPaginator({ perPage });
+
+        return paginate<Session, Prisma.SessionFindManyArgs>(
+            this.prisma.session,
+            {
+                where: {
+                    email: {
+                        email: {
+                            contains: search,
+                            mode: 'insensitive',
+                        },
+                    },
+                    ...(status !== null ? { status } : {}),
+                },
+            },
+            {
+                page,
+            },
+        );
     }
 
     async createSession(email: string, quizId: string): Promise<Session> {

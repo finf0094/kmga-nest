@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { PrismaService } from '@prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { createPaginator } from 'prisma-pagination';
+import { createPaginator, PaginatedResult } from 'prisma-pagination';
 import { Prisma, Quiz, QuizStatus } from '@prisma/client';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { convertToSecondsUtil } from '@common/utils';
@@ -15,7 +15,12 @@ export class QuizService {
         private readonly configService: ConfigService,
     ) {}
 
-    async getAll(page: number, perPage: number, search: string, status: QuizStatus | null) {
+    async getAll(
+        page: number,
+        perPage: number,
+        search: string,
+        status: QuizStatus | null,
+    ): Promise<PaginatedResult<Quiz>> {
         const paginate = createPaginator({ perPage });
 
         return paginate<Quiz, Prisma.QuizFindManyArgs>(

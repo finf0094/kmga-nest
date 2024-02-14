@@ -5,9 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "assets": [
-      "**/*.ejs"
-    ],
+    "assets": ["mail/templates/**/*"],
     "watchAssets": true
   },
   "projects": {

@@ -16,7 +16,7 @@ import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { Quiz, QuizStatus } from '@prisma/client';
 import { Public } from '@common/decorators';
-import { PaginatedOutputDto } from '@common/dto';
+import { PaginatedResult } from 'prisma-pagination';
 
 @Public()
 @Controller('quiz')
@@ -29,7 +29,7 @@ export class QuizController {
         @Query('perPage') perPage: number = 10,
         @Query('search') search: string = '',
         @Query('status') status: string,
-    ): Promise<PaginatedOutputDto<Quiz>> {
+    ): Promise<PaginatedResult<Quiz>> {
         // Преобразование 'null' в null и обработка как QuizStatus | null
         const statusValue = status === 'null' ? null : (status as QuizStatus | null);
         return this.quizService.getAll(page, perPage, search, statusValue);

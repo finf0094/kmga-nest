@@ -10,7 +10,6 @@ export class MailService {
             subject: 'Опрос',
             template: './new-session', // Путь к шаблону в папке templates
             context: {
-                email,
                 url,
             },
         });
