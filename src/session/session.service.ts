@@ -27,6 +27,20 @@ export class SessionService {
         return session;
     }
 
+    async deleteSession(sessionId: string): Promise<void> {
+        const session = await this.prisma.session.findUnique({
+            where: { id: sessionId },
+        });
+
+        if (!session) {
+            throw new NotFoundException(`Session with ID ${sessionId} not found`);
+        }
+
+        await this.prisma.session.delete({
+            where: { id: sessionId },
+        });
+    }
+
     async getAllSessions(page: number, perPage: number, search: string, status: SessionStatus | null) {
         const paginate = createPaginator({ perPage });
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, NotFoundException, ParseUUIDPipe, Get, Query } from '@nestjs/common';
+import { Body, Controller, Param, Post, NotFoundException, ParseUUIDPipe, Get, Query, Delete } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { SelectedAnswer, Session, SessionStatus } from '@prisma/client';
 import { Public } from '@common/decorators';
@@ -28,6 +28,11 @@ export class SessionController {
         }
 
         return session;
+    }
+
+    @Delete(':id')
+    async deleteSession(@Param('id', ParseUUIDPipe) sessionId: string): Promise<void> {
+        await this.sessionService.deleteSession(sessionId);
     }
 
     @Post()
