@@ -14,8 +14,9 @@ import {
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
-import { QuizStatus } from '@prisma/client';
+import { Quiz, QuizStatus } from '@prisma/client';
 import { Public } from '@common/decorators';
+import { PaginatedOutputDto } from '@common/dto';
 
 @Public()
 @Controller('quiz')
@@ -28,13 +29,13 @@ export class QuizController {
         @Query('perPage') perPage = 10,
         @Query('search') search = '',
         @Query('status') status: string,
-    ) {
-        const statusValue = status !== 'null' ? null : (status as QuizStatus | null);
+    ): Promise<PaginatedOutputDto<Quiz>> {
+        const statusValue = status === '' ? null : (status as QuizStatus);
         return this.quizService.getAll(page, perPage, search, statusValue);
     }
 
     @Get(':id')
-    async getQuizById(@Param('id', ParseUUIDPipe) id: string) {
+    async getQuizById(@Param('id', ParseUUIDPipe) id: string): Promise<Quiz> {
         const quiz = await this.quizService.findOne(id);
         if (!quiz) {
             throw new NotFoundException('Quiz not found');
@@ -44,12 +45,12 @@ export class QuizController {
 
     @Post()
     @UsePipes(new ValidationPipe({ transform: true }))
-    async createQuiz(@Body() createQuizDto: CreateQuizDto) {
+    async createQuiz(@Body() createQuizDto: CreateQuizDto): Promise<Quiz> {
         return this.quizService.save(createQuizDto);
     }
 
     @Delete(':id')
-    async deleteQuiz(@Param('id', ParseUUIDPipe) id: string) {
+    async deleteQuiz(@Param('id', ParseUUIDPipe) id: string): Promise<Quiz> {
         const deletedQuiz = await this.quizService.delete(id);
         if (!deletedQuiz) {
             throw new NotFoundException('Quiz not found');
@@ -59,7 +60,7 @@ export class QuizController {
 
     @Put(':id')
     @UsePipes(new ValidationPipe({ transform: true }))
-    async updateQuiz(@Param('id', ParseUUIDPipe) id: string, @Body() updateQuizDto: CreateQuizDto) {
+    async updateQuiz(@Param('id', ParseUUIDPipe) id: string, @Body() updateQuizDto: CreateQuizDto): Promise<Quiz> {
         return this.quizService.updateQuiz(id, updateQuizDto);
     }
 }
