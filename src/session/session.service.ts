@@ -90,7 +90,7 @@ export class SessionService {
         });
 
         // Генерируем URL сессии
-        const sessionUrl = `http://yourdomain.com/session/${session.id}`;
+        const sessionUrl = `http://195.49.210.212:5173/session/${session.id}`;
 
         // Отправляем URL на email
         await this.mailService.sendSessionUrl(email, sessionUrl);

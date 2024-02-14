@@ -97,6 +97,7 @@ export class StatisticsService {
         const session = await this.prisma.session.findUnique({
             where: { id: sessionId },
             include: {
+                email: true,
                 quiz: {
                     select: {
                         title: true,
@@ -125,6 +126,8 @@ export class StatisticsService {
 
         // Преобразуем данные сессии в нужный формат
         return {
+            createdAt: session.createdAt,
+            email: session.email.email,
             quizTitle: session.quiz.title,
             questions: session.quiz.questions.map((question) => ({
                 title: question.title,
