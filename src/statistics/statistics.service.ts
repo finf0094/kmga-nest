@@ -45,14 +45,13 @@ export class StatisticsService {
         const optionsStatistics = question.options.map((option) => ({
             value: option.value,
             count: 0, // Начальное количество выборов для данной опции
+            id: option.id,
         }));
 
         // Перебираем выбранные ответы и считаем количество выборов для каждой опции
         selectedAnswers.forEach((selectedAnswer) => {
-            // Находим индекс опции в массиве опций вопроса
-            const optionIndex = optionsStatistics.findIndex((option) => option.value === selectedAnswer.answerId);
+            const optionIndex = optionsStatistics.findIndex((option) => option.id === selectedAnswer.answerId);
             if (optionIndex !== -1) {
-                // Увеличиваем счетчик выборов для найденной опции
                 optionsStatistics[optionIndex].count++;
             }
         });
@@ -60,7 +59,8 @@ export class StatisticsService {
         // Структура для статистики
         return {
             question: question.title,
-            options: optionsStatistics,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            options: optionsStatistics.map(({ id, ...rest }) => rest),
         };
     }
 
