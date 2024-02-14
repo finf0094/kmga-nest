@@ -23,7 +23,7 @@ export class StatisticsController {
         return stats;
     }
 
-    @Get('questions/:questionId/statistics')
+    @Get('questions/:questionId')
     async getQuestionStatistics(@Param('questionId', ParseUUIDPipe) questionId: string): Promise<any> {
         const stats = await this.statisticsService.getQuestionStatistics(questionId);
         if (!stats) {
@@ -32,7 +32,7 @@ export class StatisticsController {
         return stats;
     }
 
-    @Get(':quizId/statistics')
+    @Get('quiz/:quizId')
     async getQuizStatistics(
         @Param('quizId', ParseUUIDPipe) quizId: string,
     ): Promise<{ averageScorePercentage: number }> {
@@ -45,7 +45,7 @@ export class StatisticsController {
         return { averageScorePercentage };
     }
 
-    @Get(':sessionId/statistics')
+    @Get('session/:sessionId')
     async getSessionStatistics(@Param('sessionId') sessionId: string) {
         const statistics = await this.statisticsService.getSessionStatistics(sessionId);
         if (!statistics) {
