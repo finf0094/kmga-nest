@@ -44,4 +44,13 @@ export class StatisticsController {
         }
         return { averageScorePercentage };
     }
+
+    @Get(':sessionId/statistics')
+    async getSessionStatistics(@Param('sessionId') sessionId: string) {
+        const statistics = await this.statisticsService.getSessionStatistics(sessionId);
+        if (!statistics) {
+            throw new NotFoundException(`Statistics for session with id ${sessionId} not found`);
+        }
+        return statistics;
+    }
 }

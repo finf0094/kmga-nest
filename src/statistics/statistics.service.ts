@@ -92,4 +92,47 @@ export class StatisticsService {
         // Рассчитываем средний процент правильных ответов
         return (totalScored / (totalPossibleScore * sessions.length)) * 100;
     }
+
+    async getSessionStatistics(sessionId: string): Promise<any> {
+        const session = await this.prisma.session.findUnique({
+            where: { id: sessionId },
+            include: {
+                quiz: {
+                    select: {
+                        title: true,
+                        questions: {
+                            include: {
+                                options: true, // Включаем опции для каждого вопроса
+                                SelectedAnswer: {
+                                    where: {
+                                        sessionId: sessionId, // Фильтруем выбранные ответы по текущей сессии
+                                    },
+                                    select: {
+                                        questionId: true,
+                                        answerId: true, // ID выбранного ответа
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!session) {
+            return null;
+        }
+
+        // Преобразуем данные сессии в нужный формат
+        return {
+            quizTitle: session.quiz.title,
+            questions: session.quiz.questions.map((question) => ({
+                title: question.title,
+                options: question.options.map((option) => ({
+                    value: option.value,
+                    isSelected: question.SelectedAnswer.some((answer) => answer.answerId === option.id),
+                })),
+            })),
+        };
+    }
 }

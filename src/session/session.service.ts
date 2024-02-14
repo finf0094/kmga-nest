@@ -42,6 +42,9 @@ export class SessionService {
                     },
                     ...(status !== null ? { status } : {}),
                 },
+                include: {
+                    email: true,
+                },
             },
             {
                 page,
