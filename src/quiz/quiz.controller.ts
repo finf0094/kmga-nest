@@ -27,9 +27,10 @@ export class QuizController {
         @Query('page') page = 1,
         @Query('perPage') perPage = 10,
         @Query('search') search = '',
-        @Query('status') status: QuizStatus | null = null,
+        @Query('status') status: string,
     ) {
-        return this.quizService.getAll(page, perPage, search, status);
+        const statusValue = status !== 'null' ? null : (status as QuizStatus | null);
+        return this.quizService.getAll(page, perPage, search, statusValue);
     }
 
     @Get(':id')
