@@ -13,6 +13,7 @@ export class CreateQuizDto {
     @ArrayMinSize(1)
     tags?: string[];
 
+    @IsOptional()
     @IsEnum(QuizStatus)
-    status: QuizStatus;
+    status?: QuizStatus;
 }
