@@ -27,7 +27,7 @@ export class QuizService {
                         { description: { contains: search, mode: 'insensitive' } },
                         ...(search ? [{ tags: { has: search } }] : []),
                     ],
-                    ...(status ? { status } : {}),
+                    ...(status !== null ? { status } : {}), // Убедитесь, что status добавляется только если он не null
                 },
             },
             {

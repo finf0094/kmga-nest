@@ -25,12 +25,13 @@ export class QuizController {
 
     @Get()
     async getAllQuizzes(
-        @Query('page') page = 1,
-        @Query('perPage') perPage = 10,
-        @Query('search') search = '',
+        @Query('page') page: number = 1,
+        @Query('perPage') perPage: number = 10,
+        @Query('search') search: string = '',
         @Query('status') status: string,
     ): Promise<PaginatedOutputDto<Quiz>> {
-        const statusValue = status === '' ? null : (status as QuizStatus);
+        // Преобразование 'null' в null и обработка как QuizStatus | null
+        const statusValue = status === 'null' ? null : (status as QuizStatus | null);
         return this.quizService.getAll(page, perPage, search, statusValue);
     }
 

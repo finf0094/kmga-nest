@@ -10,6 +10,22 @@ export class SessionService {
         private readonly mailService: MailService,
     ) {}
 
+    async getSession(sessionId: string): Promise<Session> {
+        const session = await this.prisma.session.findUnique({
+            where: { id: sessionId },
+            include: {
+                quiz: true,
+                email: true,
+            },
+        });
+
+        if (!session) {
+            return null;
+        }
+
+        return session;
+    }
+
     async createSession(email: string, quizId: string): Promise<Session> {
         // Проверяем, существует ли email
         let emailEntry = await this.prisma.email.findUnique({

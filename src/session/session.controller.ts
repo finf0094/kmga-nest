@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, NotFoundException, ParseUUIDPipe } from '@nestjs/common';
+import { Body, Controller, Param, Post, NotFoundException, ParseUUIDPipe, Get } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { SelectedAnswer, Session } from '@prisma/client';
 import { Public } from '@common/decorators';
@@ -7,6 +7,17 @@ import { Public } from '@common/decorators';
 @Controller('sessions')
 export class SessionController {
     constructor(private readonly sessionService: SessionService) {}
+
+    @Get(':sessionId')
+    async getSession(@Param('sessionId', ParseUUIDPipe) sessionId: string): Promise<Session> {
+        const session = await this.sessionService.getSession(sessionId);
+
+        if (!session) {
+            throw new NotFoundException(`Session with ID ${sessionId} not found`);
+        }
+
+        return session;
+    }
 
     @Post()
     async createSession(@Body() body: { email: string; quizId: string }): Promise<Session> {
