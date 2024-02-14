@@ -83,7 +83,7 @@ model Session {
   id             String           @id @default(uuid())
   createdAt      DateTime         @default(now()) @map("created_at")
   quizId         String           @map("quiz_id")
-  quiz           Quiz             @relation(fields: [quizId], references: [id])
+  quiz           Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
   email          Email            @relation(fields: [emailId], references: [id])
   SelectedAnswer SelectedAnswer[]
 

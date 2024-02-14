@@ -1,4 +1,4 @@
-import { ArrayMinSize, IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsString, IsNumber, ValidateNested, IsArray, ArrayMinSize } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateQuestionDto {
@@ -17,5 +17,6 @@ export class CreateOptionDto {
     value: string;
 
     @IsNumber()
+    @Type(() => Number)
     weight: number;
 }
