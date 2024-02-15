@@ -3,12 +3,14 @@ import { PrismaService } from '@prisma/prisma.service';
 import { MailService } from '@mail/mail.service';
 import { Prisma, SelectedAnswer, Session, SessionStatus } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SessionService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly mailService: MailService,
+        private readonly configService: ConfigService,
     ) {}
 
     async getSession(sessionId: string): Promise<Session> {
@@ -90,7 +92,7 @@ export class SessionService {
         });
 
         // Генерируем URL сессии
-        const sessionUrl = `http://yourdomain.com/session/${session.id}`;
+        const sessionUrl = `${this.configService.get('FRONTEND_URL')}/session/${session.id}`;
 
         // Отправляем URL на email
         await this.mailService.sendSessionUrl(email, sessionUrl);

@@ -20,7 +20,7 @@ import { join } from 'path';
                     },
                 },
                 defaults: {
-                    from: `"No Reply" <${config.get<string>('EMAIL_FROM')}>`,
+                    from: `"KMG Automation" <${config.get<string>('EMAIL_FROM')}>`,
                 },
                 template: {
                     dir: join(__dirname, 'mail', 'templates'),
