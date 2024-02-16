@@ -44,7 +44,7 @@ export class SessionService {
     }
 
     async getAllSessions(
-        sessionId: string,
+        quizId: string,
         page: number,
         perPage: number,
         search: string,
@@ -56,11 +56,12 @@ export class SessionService {
             this.prisma.session,
             {
                 where: {
-                    id: {
-                        contains: sessionId,
-                        mode: 'insensitive',
-                    },
-
+                    quiz: {
+                        id: {
+                            contains: quizId,
+                            mode: 'insensitive',
+                        },
+                   },
                     email: {
                         email: {
                             contains: search,
