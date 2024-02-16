@@ -8,7 +8,7 @@ import { Public } from '@common/decorators';
 export class StatisticsController {
     constructor(private readonly statisticsService: StatisticsService) {}
 
-    @Get(':quizId/completion-stats')
+    @Get('quiz/:quizId/completion-stats')
     async getQuizCompletionStats(
         @Param('quizId', ParseUUIDPipe) quizId: string,
         @Query('status') status?: string | null,
