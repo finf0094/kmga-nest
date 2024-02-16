@@ -3,7 +3,7 @@ import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { PrismaService } from '@prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { createPaginator, PaginatedResult } from 'prisma-pagination';
-import { Prisma, Quiz, QuizStatus } from '@prisma/client';
+import { Prisma, Quiz, QuizStatus, Session, SessionStatus } from '@prisma/client';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { convertToSecondsUtil } from '@common/utils';
 
@@ -33,6 +33,37 @@ export class QuizService {
                         ...(search ? [{ tags: { has: search } }] : []),
                     ],
                     ...(status !== null ? { status } : {}),
+                },
+            },
+            {
+                page,
+            },
+        );
+    }
+
+    async getAllSessions(quizId: string, page: number, perPage: number, search: string, status: SessionStatus | null) {
+        const paginate = createPaginator({ perPage });
+
+        return paginate<Session, Prisma.SessionFindManyArgs>(
+            this.prisma.session,
+            {
+                where: {
+                    quiz: {
+                        id: {
+                            contains: quizId,
+                            mode: 'insensitive',
+                        },
+                    },
+                    email: {
+                        email: {
+                            contains: search,
+                            mode: 'insensitive',
+                        },
+                    },
+                    ...(status !== null ? { status } : {}),
+                },
+                include: {
+                    email: true,
                 },
             },
             {

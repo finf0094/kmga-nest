@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
-import { Quiz, QuizStatus } from '@prisma/client';
+import { Quiz, QuizStatus, SessionStatus } from '@prisma/client';
 import { Public } from '@common/decorators';
 import { PaginatedResult } from 'prisma-pagination';
 
@@ -33,6 +33,18 @@ export class QuizController {
         // Преобразование 'null' в null и обработка как QuizStatus | null
         const statusValue = status === null ? null : (status as QuizStatus | null);
         return this.quizService.getAll(page, perPage, search, statusValue);
+    }
+
+    @Get(':quizId/sessions')
+    async getAllSessions(
+        @Param('quizId', ParseUUIDPipe) quizId,
+        @Query('page') page: number = 1,
+        @Query('perPage') perPage: number = 10,
+        @Query('search') search: string = '',
+        @Query('status') status: string,
+    ) {
+        const statusValue = status === 'null' ? null : (status as SessionStatus | null);
+        return this.quizService.getAllSessions(quizId, page, perPage, search, statusValue);
     }
 
     @Get(':id')
