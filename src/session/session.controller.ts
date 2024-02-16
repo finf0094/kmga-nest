@@ -19,9 +19,8 @@ export class SessionController {
         return session;
     }
 
-    @Post('send')
-    async sendSessionToEmail(@Body() body: { sessionId: string }): Promise<{ status: SessionStatus }> {
-        const { sessionId } = body;
+    @Post('/:sessionId/send')
+    async sendSessionToEmail(@Param('sessionId', ParseUUIDPipe) sessionId: string): Promise<{ status: SessionStatus }> {
         const status = await this.sessionService.sendSessionToEmail(sessionId);
         return { status: status };
     }
