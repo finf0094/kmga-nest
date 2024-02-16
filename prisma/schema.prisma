@@ -123,6 +123,7 @@ enum QuizStatus {
 
 enum SessionStatus {
   NOT_STARTED
+  MAIL_SENDED
   IN_PROGRESS
   COMPLETED
 }

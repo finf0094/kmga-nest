@@ -1,6 +1,6 @@
 import { Body, Controller, Param, Post, NotFoundException, ParseUUIDPipe, Get, Delete } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { SelectedAnswer, Session } from '@prisma/client';
+import { SelectedAnswer, Session, SessionStatus } from '@prisma/client';
 import { Public } from '@common/decorators';
 
 @Controller('sessions')
@@ -17,6 +17,13 @@ export class SessionController {
         }
 
         return session;
+    }
+
+    @Post('send')
+    async sendSessionToEmail(@Body() body: { sessionId: string }): Promise<{ status: SessionStatus }> {
+        const { sessionId } = body;
+        const status = await this.sessionService.sendSessionToEmail(sessionId);
+        return { status: status };
     }
 
     @Delete(':id')

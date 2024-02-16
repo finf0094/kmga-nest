@@ -65,13 +65,33 @@ export class SessionService {
             },
         });
 
-        // Генерируем URL сессии
+        return session;
+    }
+
+    async sendSessionToEmail(sessionId: string): Promise<SessionStatus> {
+        const session = await this.prisma.session.findUnique({
+            where: { id: sessionId },
+            include: { email: true },
+        });
+
+        if (!session) {
+            return SessionStatus.NOT_STARTED; // Сессия не найдена
+        }
+
         const sessionUrl = `${this.configService.get('FRONTEND_URL')}/session/${session.id}`;
 
-        // Отправляем URL на email
-        await this.mailService.sendSessionUrl(email, sessionUrl);
-
-        return session;
+        try {
+            await this.mailService.sendSessionUrl(session.email.email, sessionUrl);
+            // Обновляем статус сессии после успешной отправки
+            await this.prisma.session.update({
+                where: { id: sessionId },
+                data: { status: SessionStatus.MAIL_SENDED },
+            });
+            return SessionStatus.MAIL_SENDED; // Сообщение успешно отправлено
+        } catch (error) {
+            console.error('Error sending session URL via email:', error);
+            return SessionStatus.NOT_STARTED; // Ошибка при отправке
+        }
     }
 
     async startQuiz(quizSessionId: string): Promise<Session> {

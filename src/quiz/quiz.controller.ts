@@ -31,7 +31,7 @@ export class QuizController {
         @Query('status') status: string,
     ): Promise<PaginatedResult<Quiz>> {
         // Преобразование 'null' в null и обработка как QuizStatus | null
-        const statusValue = status === null ? null : (status as QuizStatus | null);
+        const statusValue = status === 'null' ? null : (status as QuizStatus | null);
         return this.quizService.getAll(page, perPage, search, statusValue);
     }
 
