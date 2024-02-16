@@ -127,6 +127,7 @@ export class StatisticsService {
         // Преобразуем данные сессии в нужный формат
         return {
             createdAt: session.createdAt,
+            feedBack: session.feedBack,
             email: session.email.email,
             quizTitle: session.quiz.title,
             questions: session.quiz.questions.map((question) => ({
