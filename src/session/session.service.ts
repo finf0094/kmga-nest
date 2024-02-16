@@ -43,13 +43,24 @@ export class SessionService {
         });
     }
 
-    async getAllSessions(page: number, perPage: number, search: string, status: SessionStatus | null) {
+    async getAllSessions(
+        sessionId: string,
+        page: number,
+        perPage: number,
+        search: string,
+        status: SessionStatus | null,
+    ) {
         const paginate = createPaginator({ perPage });
 
         return paginate<Session, Prisma.SessionFindManyArgs>(
             this.prisma.session,
             {
                 where: {
+                    id: {
+                        contains: sessionId,
+                        mode: 'insensitive',
+                    },
+
                     email: {
                         email: {
                             contains: search,

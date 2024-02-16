@@ -7,15 +7,16 @@ import { Public } from '@common/decorators';
 export class SessionController {
     constructor(private readonly sessionService: SessionService) {}
 
-    @Get()
+    @Get(':sessionId')
     async getAllSessions(
+        @Param('sessionId', ParseUUIDPipe) sessionId,
         @Query('page') page: number = 1,
         @Query('perPage') perPage: number = 10,
         @Query('search') search: string = '',
         @Query('status') status: string,
     ) {
         const statusValue = status === 'null' ? null : (status as SessionStatus | null);
-        return this.sessionService.getAllSessions(page, perPage, search, statusValue);
+        return this.sessionService.getAllSessions(sessionId, page, perPage, search, statusValue);
     }
 
     @Public()
