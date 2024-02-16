@@ -144,10 +144,9 @@ export class SessionService {
             throw new NotFoundException(`Option with id ${answerId} does not exist`);
         }
 
-        // Создаем или обновляем SelectedAnswer
         const selectedAnswer = await this.prisma.selectedAnswer.upsert({
             where: {
-                sessionId_questionId: { sessionId, questionId }, // Предполагается, что вы исправили эту часть согласно предыдущим указаниям
+                sessionId_questionId: { sessionId, questionId },
             },
             update: {
                 answerId,
@@ -172,7 +171,7 @@ export class SessionService {
         return selectedAnswer;
     }
 
-    async endQuiz(quizSessionId: string): Promise<Session> {
+    async endQuiz(quizSessionId: string, feedBack: string | null): Promise<Session> {
         let quizSession = await this.prisma.session.findUnique({
             where: { id: quizSessionId },
         });
@@ -186,6 +185,7 @@ export class SessionService {
             data: {
                 endTime: new Date(),
                 status: SessionStatus.COMPLETED,
+                feedBack,
             },
         });
 

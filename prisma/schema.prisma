@@ -90,6 +90,7 @@ model Session {
   startTime DateTime?
   endTime   DateTime?
   status    SessionStatus
+  feedBack  String? @map("feed_back")
   score     Float
   emailId   String
 }
