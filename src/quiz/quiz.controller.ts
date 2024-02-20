@@ -11,19 +11,22 @@ import {
     UsePipes,
     ValidationPipe,
     ParseUUIDPipe,
+    UseGuards,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
-import { Quiz, QuizStatus, SessionStatus } from '@prisma/client';
-import { Public } from '@common/decorators';
+import { Quiz, QuizStatus, Role, SessionStatus } from '@prisma/client';
 import { PaginatedResult } from 'prisma-pagination';
+import { RolesGuard } from '@auth/guargs/role.guard';
+import { Roles } from '@common/decorators';
 
-@Public()
 @Controller('quiz')
 export class QuizController {
     constructor(private readonly quizService: QuizService) {}
 
     @Get()
+    @UseGuards(RolesGuard)
+    @Roles(Role.USER)
     async getAllQuizzes(
         @Query('page') page: number = 1,
         @Query('perPage') perPage: number = 10,
@@ -36,6 +39,8 @@ export class QuizController {
     }
 
     @Get(':quizId/sessions')
+    @UseGuards(RolesGuard)
+    @Roles(Role.USER)
     async getAllSessions(
         @Param('quizId', ParseUUIDPipe) quizId,
         @Query('page') page: number = 1,
@@ -58,6 +63,8 @@ export class QuizController {
 
     @Post()
     @UsePipes(new ValidationPipe({ transform: true }))
+    @UseGuards(RolesGuard)
+    @Roles(Role.USER)
     async createQuiz(@Body() createQuizDto: CreateQuizDto): Promise<Quiz> {
         return this.quizService.save(createQuizDto);
     }

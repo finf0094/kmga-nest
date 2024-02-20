@@ -64,7 +64,7 @@ export class StatisticsService {
         };
     }
 
-    async calculateQuizStatistics(quizId: string): Promise<number> {
+    async calculateQuizStatistics(quizId: string): Promise<{ averageScorePercentage: number; questions: any[] }> {
         // Находим все сессии для данной викторины
         const sessions = await this.prisma.session.findMany({
             where: { quizId, status: SessionStatus.COMPLETED },
@@ -74,23 +74,48 @@ export class StatisticsService {
             return null;
         }
 
-        // Подсчитываем общее количество очков, которое можно было набрать в викторине
+        // Получаем все вопросы викторины с опциями
         const questions = await this.prisma.question.findMany({
             where: { quizId },
             include: { options: true },
         });
 
-        let totalPossibleScore = 0;
-        questions.forEach((question) => {
-            const maxOptionWeight = Math.max(...question.options.map((option) => option.weight));
-            totalPossibleScore += maxOptionWeight;
-        });
+        let totalAverage = 0;
+        const questionsStatistics = await Promise.all(
+            questions.map(async (question) => {
+                const maxOptionWeight = Math.max(...question.options.map((option) => option.weight));
+                const selectedAnswers = await this.prisma.selectedAnswer.findMany({
+                    where: {
+                        questionId: question.id,
+                        sessionId: { in: sessions.map((session) => session.id) },
+                    },
+                });
 
-        // Подсчитываем общее количество набранных очков всеми участниками
-        const totalScored = sessions.reduce((acc, session) => acc + session.score, 0);
+                let questionScore = 0;
+                selectedAnswers.forEach((answer) => {
+                    const option = question.options.find((option) => option.id === answer.answerId);
+                    if (option) {
+                        questionScore += option.weight;
+                    }
+                });
 
-        // Рассчитываем средний процент правильных ответов
-        return (totalScored / (totalPossibleScore * sessions.length)) * 100;
+                const averageScore = (questionScore / (maxOptionWeight * sessions.length)) * 100;
+                totalAverage += averageScore;
+
+                return {
+                    questionId: question.id,
+                    title: question.title,
+                    averageScore,
+                };
+            }),
+        );
+
+        const overallAverage = totalAverage / questions.length;
+
+        return {
+            averageScorePercentage: overallAverage,
+            questions: questionsStatistics,
+        };
     }
 
     async getSessionStatistics(sessionId: string): Promise<any> {
@@ -103,14 +128,14 @@ export class StatisticsService {
                         title: true,
                         questions: {
                             include: {
-                                options: true, // Включаем опции для каждого вопроса
+                                options: true,
                                 SelectedAnswer: {
                                     where: {
-                                        sessionId: sessionId, // Фильтруем выбранные ответы по текущей сессии
+                                        sessionId: sessionId,
                                     },
                                     select: {
                                         questionId: true,
-                                        answerId: true, // ID выбранного ответа
+                                        answerId: true,
                                     },
                                 },
                             },
@@ -124,12 +149,30 @@ export class StatisticsService {
             return null;
         }
 
-        // Преобразуем данные сессии в нужный формат
+        let totalWeight = 0;
+        let answeredQuestions = 0;
+
+        // Проходим по всем вопросам викторины
+        session.quiz.questions.forEach((question) => {
+            const selectedAnswer = question.SelectedAnswer[0]; // Предполагаем, что на каждый вопрос один ответ
+            if (selectedAnswer) {
+                const option = question.options.find((option) => option.id === selectedAnswer.answerId);
+                if (option) {
+                    totalWeight += option.weight; // Суммируем вес выбранного ответа
+                    answeredQuestions += 1; // Учитываем количество отвеченных вопросов
+                }
+            }
+        });
+
+        const averageWeight = answeredQuestions > 0 ? totalWeight / answeredQuestions : 0; // Рассчитываем средний вес
+
+        // Преобразуем данные сессии в нужный формат, добавляем средний вес
         return {
             createdAt: session.createdAt,
             feedBack: session.feedBack,
             email: session.email.email,
             quizTitle: session.quiz.title,
+            averageWeight, // Добавляем средний вес выбранных ответов
             questions: session.quiz.questions.map((question) => ({
                 title: question.title,
                 options: question.options.map((option) => ({
