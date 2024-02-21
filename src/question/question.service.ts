@@ -34,7 +34,11 @@ export class QuestionService {
     async getAllQuestions(quizId: string): Promise<Question[]> {
         const quiz = await this.prisma.quiz.findUnique({
             where: { id: quizId },
-            include: { questions: true },
+            include: {
+                questions: {
+                    orderBy: { position: 'asc' },
+                },
+            },
         });
 
         if (!quiz) {
