@@ -78,6 +78,7 @@ export class StatisticsService {
         const questions = await this.prisma.question.findMany({
             where: { quizId },
             include: { options: true },
+            orderBy: { position: 'asc' },
         });
 
         let totalAverage = 0;
