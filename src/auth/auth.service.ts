@@ -26,10 +26,15 @@ export class AuthService {
     ) {}
 
     async refreshTokens(refreshToken: string, agent: string): Promise<Tokens> {
-        const token = await this.prismaService.token.delete({ where: { token: refreshToken } });
+        const token = await this.prismaService.token.findUnique({ where: { token: refreshToken } });
+
         if (!token || new Date(token.exp) < new Date()) {
+            console.log("Token doesn't exist or has expired");
             throw new UnauthorizedException();
         }
+
+        await this.deleteRefreshToken(refreshToken);
+
         const user = await this.userService.findOne(token.userId);
         return this.generateTokens(user, agent);
     }
@@ -83,7 +88,6 @@ export class AuthService {
         if (_token) {
             token = _token.token;
         } else {
-            // If no token found, generate a new one
             token = v4();
         }
         return this.prismaService.token.upsert({
@@ -101,8 +105,12 @@ export class AuthService {
         });
     }
 
-    deleteRefreshToken(token: string) {
-        return this.prismaService.token.delete({ where: { token } });
+    async deleteRefreshToken(token: string) {
+        try {
+            await this.prismaService.token.delete({ where: { token } });
+        } catch (error) {
+            console.error('Error deleting token:', error);
+        }
     }
 
     async providerAuth(email: string, agent: string, provider: Provider) {
