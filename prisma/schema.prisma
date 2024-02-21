@@ -61,11 +61,13 @@ model Quiz {
 model Question {
   id             String           @id @default(uuid())
   title          String
+  position       Int              @default(autoincrement())
   options        Option[]
   quizId         String           @map("quiz_id")
   Quiz           Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
   SelectedAnswer SelectedAnswer[]
 
+  @@index([position])
   @@map("questions")
 }
 
@@ -90,7 +92,7 @@ model Session {
   startTime DateTime?
   endTime   DateTime?
   status    SessionStatus
-  feedBack  String? @map("feed_back")
+  feedBack  String?       @map("feed_back")
   score     Float
   emailId   String
 }
