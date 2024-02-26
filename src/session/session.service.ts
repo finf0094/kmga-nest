@@ -68,7 +68,7 @@ export class SessionService {
         return session;
     }
 
-    async sendSessionToEmail(sessionId: string): Promise<SessionStatus> {
+    async sendSessionToEmail(sessionId: string, language: string): Promise<SessionStatus> {
         const session = await this.prisma.session.findUnique({
             where: { id: sessionId },
             include: { email: true },
@@ -81,7 +81,7 @@ export class SessionService {
         const sessionUrl = `${this.configService.get('FRONTEND_URL')}/session/${session.id}`;
 
         try {
-            await this.mailService.sendSessionUrl(session.email.email, sessionUrl);
+            await this.mailService.sendSessionUrl(session.email.email, sessionUrl, language);
             // Обновляем статус сессии после успешной отправки
             await this.prisma.session.update({
                 where: { id: sessionId },

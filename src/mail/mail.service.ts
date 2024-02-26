@@ -4,11 +4,14 @@ import { MailerService } from '@nestjs-modules/mailer';
 @Injectable()
 export class MailService {
     constructor(private readonly mailerService: MailerService) {}
-    async sendSessionUrl(email: string, url: string): Promise<void> {
+    async sendSessionUrl(email: string, url: string, language: string): Promise<void> {
+        const subject = language === 'en' ? 'Survey' : 'Опрос';
+        const template = language === 'en' ? './new-session.eng' : './new-session.ru';
+
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Опрос',
-            template: './new-session', // Путь к шаблону в папке templates
+            subject,
+            template,
             context: {
                 url,
             },

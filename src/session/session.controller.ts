@@ -19,10 +19,13 @@ export class SessionController {
         return session;
     }
 
-    @Post('/:sessionId/send')
-    async sendSessionToEmail(@Param('sessionId', ParseUUIDPipe) sessionId: string): Promise<{ status: SessionStatus }> {
-        const status = await this.sessionService.sendSessionToEmail(sessionId);
-        return { status: status };
+    @Post('/:sessionId/send/:language')
+    async sendSessionToEmail(
+        @Param('sessionId', ParseUUIDPipe) sessionId: string,
+        @Param('language') language: string,
+    ): Promise<{ status: SessionStatus }> {
+        const status = await this.sessionService.sendSessionToEmail(sessionId, language);
+        return { status };
     }
 
     @Delete(':id')
