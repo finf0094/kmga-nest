@@ -89,12 +89,13 @@ model Session {
   email          Email            @relation(fields: [emailId], references: [id])
   SelectedAnswer SelectedAnswer[]
 
-  startTime DateTime?
-  endTime   DateTime?
-  status    SessionStatus
-  feedBack  String?       @map("feed_back")
-  score     Float
-  emailId   String
+  sendedTime DateTime?
+  startTime  DateTime?
+  endTime    DateTime?
+  status     SessionStatus
+  feedBack   String?       @map("feed_back")
+  score      Float
+  emailId    String
 }
 
 model SelectedAnswer {

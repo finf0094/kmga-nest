@@ -75,22 +75,21 @@ export class SessionService {
         });
 
         if (!session) {
-            return SessionStatus.NOT_STARTED; // Сессия не найдена
+            return SessionStatus.NOT_STARTED;
         }
 
         const sessionUrl = `${this.configService.get('FRONTEND_URL')}/session/${session.id}`;
 
         try {
             await this.mailService.sendSessionUrl(session.email.email, sessionUrl, language);
-            // Обновляем статус сессии после успешной отправки
             await this.prisma.session.update({
                 where: { id: sessionId },
-                data: { status: SessionStatus.MAIL_SENDED },
+                data: { status: SessionStatus.MAIL_SENDED, sendedTime: new Date() },
             });
-            return SessionStatus.MAIL_SENDED; // Сообщение успешно отправлено
+            return SessionStatus.MAIL_SENDED;
         } catch (error) {
             console.error('Error sending session URL via email:', error);
-            return SessionStatus.NOT_STARTED; // Ошибка при отправке
+            return SessionStatus.NOT_STARTED;
         }
     }
 
