@@ -46,19 +46,26 @@ export class StatisticsService {
             value: option.value,
             count: 0, // Начальное количество выборов для данной опции
             id: option.id,
+            weight: option.weight, // Добавляем вес каждой опции
         }));
+
+        let totalWeight = 0;
 
         // Перебираем выбранные ответы и считаем количество выборов для каждой опции
         selectedAnswers.forEach((selectedAnswer) => {
             const optionIndex = optionsStatistics.findIndex((option) => option.id === selectedAnswer.answerId);
             if (optionIndex !== -1) {
                 optionsStatistics[optionIndex].count++;
+                totalWeight += optionsStatistics[optionIndex].weight; // Увеличиваем общий вес на вес этой опции
             }
         });
+
+        const averageWeight = selectedAnswers.length > 0 ? totalWeight / selectedAnswers.length : 0;
 
         // Структура для статистики
         return {
             question: question.title,
+            averageWeight,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             options: optionsStatistics.map(({ id, ...rest }) => rest),
         };
