@@ -71,40 +71,62 @@ export class StatisticsService {
         };
     }
 
-    async calculateAverageScoresByCompany(quizId: string, maxScore: number): Promise<any[]> {
+    async calculateAverageScoresByCompany(quizId: string): Promise<any[]> {
         // Список доменов основных компаний
         const companyDomains = ['ncoc.kz', 'kpo.kz', 'tengizchevroil.com'];
 
+        // Получаем все сессии, которые были завершены
         const sessions = await this.prisma.session.findMany({
             where: { quizId, status: SessionStatus.COMPLETED },
-            include: { email: true },
+            include: {
+                email: true,
+                SelectedAnswer: {
+                    include: {
+                        question: {
+                            include: {
+                                options: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
 
         // Группируем сессии по доменам email
-        const scoresByCompany: Record<string, { totalScore: number; count: number }> = sessions.reduce(
-            (acc, session) => {
-                const domain = session.email.email.split('@')[1];
-                const company = companyDomains.includes(domain) ? domain : 'others';
+        const scoresByCompany: Record<string, { totalWeight: number; count: number }> = {};
 
-                if (!acc[company]) {
-                    acc[company] = { totalScore: 0, count: 0 };
+        sessions.forEach((session) => {
+            const domain = session.email.email.split('@')[1];
+            const company = companyDomains.includes(domain) ? domain : 'others';
+
+            if (!scoresByCompany[company]) {
+                scoresByCompany[company] = { totalWeight: 0, count: 0 };
+            }
+
+            let sessionTotalWeight = 0;
+            session.SelectedAnswer.forEach((selectedAnswer) => {
+                const maxOptionWeight = Math.max(...selectedAnswer.question.options.map((option) => option.weight));
+                const selectedOption = selectedAnswer.question.options.find(
+                    (option) => option.id === selectedAnswer.answerId,
+                );
+                if (selectedOption) {
+                    // Нормализуем вес выбранного ответа относительно максимального веса вопроса
+                    sessionTotalWeight += (selectedOption.weight / maxOptionWeight) * 100;
                 }
+            });
 
-                // Суммируем баллы и количество сессий
-                acc[company].totalScore += session.score;
-                acc[company].count += 1;
+            // Считаем средний вес для сессии
+            if (session.SelectedAnswer.length > 0) {
+                scoresByCompany[company].totalWeight += sessionTotalWeight / session.SelectedAnswer.length;
+                scoresByCompany[company].count++;
+            }
+        });
 
-                return acc;
-            },
-            {},
-        );
-
+        // Рассчитываем средний вес для каждой компании
         const averageScores = Object.entries(scoresByCompany).map(([company, data]) => {
-            // Преобразуем средний балл в проценты
-            const averageScorePercentage = data.count > 0 ? (data.totalScore / (data.count * maxScore)) * 100 : 0;
             return {
                 company,
-                averageScore: averageScorePercentage.toFixed(2), // Округляем до двух знаков после запятой
+                averageScore: data.count > 0 ? data.totalWeight / data.count : 0,
             };
         });
 
