@@ -71,7 +71,7 @@ export class StatisticsService {
         };
     }
 
-    async calculateAverageScoresByCompany(quizId: string): Promise<any[]> {
+    async calculateAverageScoresByCompany(quizId: string, maxScore: number): Promise<any[]> {
         // Список доменов основных компаний
         const companyDomains = ['ncoc.kz', 'kpo.kz', 'tengizchevroil.com'];
 
@@ -100,9 +100,11 @@ export class StatisticsService {
         );
 
         const averageScores = Object.entries(scoresByCompany).map(([company, data]) => {
+            // Преобразуем средний балл в проценты
+            const averageScorePercentage = data.count > 0 ? (data.totalScore / (data.count * maxScore)) * 100 : 0;
             return {
                 company,
-                averageScore: data.count > 0 ? data.totalScore / data.count : 0,
+                averageScore: averageScorePercentage.toFixed(2), // Округляем до двух знаков после запятой
             };
         });
 
