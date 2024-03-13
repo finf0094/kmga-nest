@@ -78,13 +78,10 @@ export class StatisticsService {
         const whereCondition = {
             quizId,
             status: SessionStatus.COMPLETED,
-            // Используем вложенный запрос для email, чтобы проверить частичное совпадение
             ...(searchEmail && {
                 email: {
-                    is: {
-                        email: {
-                            contains: searchEmail,
-                        },
+                    email: {
+                        contains: searchEmail,
                     },
                 },
             }),
