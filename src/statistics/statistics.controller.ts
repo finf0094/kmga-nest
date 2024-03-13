@@ -35,7 +35,7 @@ export class StatisticsController {
     @Get('quiz/:quizId')
     async getQuizStatistics(
         @Param('quizId', ParseUUIDPipe) quizId: string,
-    ): Promise<{ averageScorePercentage: number; questions: any[] }> {
+    ): Promise<{ count: number; averageScorePercentage: number; questions: any[] }> {
         const averageScorePercentage = await this.statisticsService.calculateQuizStatistics(quizId);
         if (averageScorePercentage === null) {
             throw new NotFoundException(

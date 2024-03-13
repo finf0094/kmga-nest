@@ -71,7 +71,9 @@ export class StatisticsService {
         };
     }
 
-    async calculateQuizStatistics(quizId: string): Promise<{ averageScorePercentage: number; questions: any[] }> {
+    async calculateQuizStatistics(
+        quizId: string,
+    ): Promise<{ count: number; averageScorePercentage: number; questions: any[] }> {
         // Находим все сессии для данной викторины
         const sessions = await this.prisma.session.findMany({
             where: { quizId, status: SessionStatus.COMPLETED },
@@ -121,6 +123,7 @@ export class StatisticsService {
         const overallAverage = totalAverage / questions.length;
 
         return {
+            count: sessions.length - 1,
             averageScorePercentage: overallAverage,
             questions: questionsStatistics,
         };
