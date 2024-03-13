@@ -78,14 +78,16 @@ export class StatisticsService {
         const whereCondition = {
             quizId,
             status: SessionStatus.COMPLETED,
-            // Добавляем условие для email через вложенный запрос, только если searchEmail предоставлен и не пустой
-            ...(searchEmail
-                ? {
-                      email: {
-                          email: searchEmail,
-                      },
-                  }
-                : {}),
+            // Используем вложенный запрос для email, чтобы проверить частичное совпадение
+            ...(searchEmail && {
+                email: {
+                    is: {
+                        email: {
+                            contains: searchEmail,
+                        },
+                    },
+                },
+            }),
         };
         // Используем whereCondition в запросе, который теперь может включать emailId, если он был предоставлен и найден
         const sessions = await this.prisma.session.findMany({
