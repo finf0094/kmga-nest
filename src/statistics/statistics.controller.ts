@@ -35,7 +35,7 @@ export class StatisticsController {
     @Get('quiz/:quizId')
     async getQuizStatistics(
         @Param('quizId', ParseUUIDPipe) quizId: string,
-        @Query('email') searchEmail: string | null,
+        @Query('email') searchEmail?: string,
     ): Promise<{ count: number; averageScorePercentage: number; questions: any[] }> {
         const averageScorePercentage = await this.statisticsService.calculateQuizStatistics(quizId, searchEmail);
         if (averageScorePercentage === null) {

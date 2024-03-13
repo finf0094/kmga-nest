@@ -73,17 +73,19 @@ export class StatisticsService {
 
     async calculateQuizStatistics(
         quizId: string,
-        searchEmail: string,
+        searchEmail?: string,
     ): Promise<{ count: number; averageScorePercentage: number; questions: any[] }> {
         const whereCondition = {
             quizId,
             status: SessionStatus.COMPLETED,
-            // Добавляем условие для email через вложенный запрос, если searchEmail предоставлен
-            ...(searchEmail && {
-                email: {
-                    email: searchEmail, // Используем связь и фильтруем по полю email в модели Email
-                },
-            }),
+            // Добавляем условие для email через вложенный запрос, только если searchEmail предоставлен и не пустой
+            ...(searchEmail
+                ? {
+                      email: {
+                          email: searchEmail,
+                      },
+                  }
+                : {}),
         };
         // Используем whereCondition в запросе, который теперь может включать emailId, если он был предоставлен и найден
         const sessions = await this.prisma.session.findMany({
