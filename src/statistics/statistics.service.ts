@@ -73,10 +73,21 @@ export class StatisticsService {
 
     async calculateQuizStatistics(
         quizId: string,
+        searchEmail: string,
     ): Promise<{ count: number; averageScorePercentage: number; questions: any[] }> {
-        // Находим все сессии для данной викторины
+        const whereCondition = {
+            quizId,
+            status: SessionStatus.COMPLETED,
+            // Добавляем условие для email через вложенный запрос, если searchEmail предоставлен
+            ...(searchEmail && {
+                email: {
+                    email: searchEmail, // Используем связь и фильтруем по полю email в модели Email
+                },
+            }),
+        };
+        // Используем whereCondition в запросе, который теперь может включать emailId, если он был предоставлен и найден
         const sessions = await this.prisma.session.findMany({
-            where: { quizId, status: SessionStatus.COMPLETED },
+            where: whereCondition,
         });
 
         if (sessions.length === 0) {
@@ -123,7 +134,7 @@ export class StatisticsService {
         const overallAverage = totalAverage / questions.length;
 
         return {
-            count: sessions.length - 1,
+            count: sessions.length,
             averageScorePercentage: overallAverage,
             questions: questionsStatistics,
         };

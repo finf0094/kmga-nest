@@ -35,8 +35,9 @@ export class StatisticsController {
     @Get('quiz/:quizId')
     async getQuizStatistics(
         @Param('quizId', ParseUUIDPipe) quizId: string,
+        @Query('email') searchEmail: string | null,
     ): Promise<{ count: number; averageScorePercentage: number; questions: any[] }> {
-        const averageScorePercentage = await this.statisticsService.calculateQuizStatistics(quizId);
+        const averageScorePercentage = await this.statisticsService.calculateQuizStatistics(quizId, searchEmail);
         if (averageScorePercentage === null) {
             throw new NotFoundException(
                 `Statistics for quiz with id ${quizId} could not be calculated or no completed sessions found.`,
