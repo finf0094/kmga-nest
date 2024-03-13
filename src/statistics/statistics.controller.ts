@@ -46,6 +46,15 @@ export class StatisticsController {
         return averageScorePercentage;
     }
 
+    @Get('quiz/:quizId/company-averages')
+    async getCompanyAverages(@Param('quizId', ParseUUIDPipe) quizId: string): Promise<any[]> {
+        const averages = await this.statisticsService.calculateAverageScoresByCompany(quizId);
+        if (!averages || averages.length === 0) {
+            throw new NotFoundException(`Averages for companies for quiz with ID ${quizId} not found`);
+        }
+        return averages;
+    }
+
     @Get('session/:sessionId')
     async getSessionStatistics(@Param('sessionId') sessionId: string) {
         const statistics = await this.statisticsService.getSessionStatistics(sessionId);

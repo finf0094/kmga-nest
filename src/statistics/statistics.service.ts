@@ -71,6 +71,44 @@ export class StatisticsService {
         };
     }
 
+    async calculateAverageScoresByCompany(quizId: string): Promise<any[]> {
+        // Список доменов основных компаний
+        const companyDomains = ['ncoc.kz', 'kpo.kz', 'tengizchevroil.com'];
+
+        const sessions = await this.prisma.session.findMany({
+            where: { quizId, status: SessionStatus.COMPLETED },
+            include: { email: true },
+        });
+
+        // Группируем сессии по доменам email
+        const scoresByCompany: Record<string, { totalScore: number; count: number }> = sessions.reduce(
+            (acc, session) => {
+                const domain = session.email.email.split('@')[1];
+                const company = companyDomains.includes(domain) ? domain : 'others';
+
+                if (!acc[company]) {
+                    acc[company] = { totalScore: 0, count: 0 };
+                }
+
+                // Суммируем баллы и количество сессий
+                acc[company].totalScore += session.score;
+                acc[company].count += 1;
+
+                return acc;
+            },
+            {},
+        );
+
+        const averageScores = Object.entries(scoresByCompany).map(([company, data]) => {
+            return {
+                company,
+                averageScore: data.count > 0 ? data.totalScore / data.count : 0,
+            };
+        });
+
+        return averageScores;
+    }
+
     async calculateQuizStatistics(
         quizId: string,
         searchEmail?: string,
