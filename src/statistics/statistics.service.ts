@@ -145,7 +145,13 @@ export class StatisticsService {
     async calculateQuizStatistics(
         quizId: string,
         searchEmail?: string,
-    ): Promise<{ count: number; averageScorePercentage: number; questions: any[] }> {
+    ): Promise<{
+        totalSessions: number;
+        completedSessions: number;
+        count: number;
+        averageScorePercentage: number;
+        questions: any[];
+    }> {
         const whereCondition = {
             quizId,
             status: SessionStatus.COMPLETED,
@@ -214,12 +220,26 @@ export class StatisticsService {
             }),
         );
 
+        const totalSessions = await this.prisma.session.count({
+            where: { quizId },
+        });
+
+        // Получаем количество завершенных сессий для данного quizId
+        const completedSessions = await this.prisma.session.count({
+            where: {
+                quizId,
+                status: SessionStatus.COMPLETED,
+            },
+        });
+
         const overallAverage = questions.length > 0 ? totalAverage / questions.length : 0;
 
         return {
             count: sessions.length,
             averageScorePercentage: overallAverage,
             questions: questionsStatistics,
+            totalSessions,
+            completedSessions,
         };
     }
 
