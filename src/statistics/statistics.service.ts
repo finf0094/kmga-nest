@@ -148,18 +148,31 @@ export class StatisticsService {
                 },
             }),
         };
-        // Используем whereCondition в запросе, который теперь может включать emailId, если он был предоставлен и найден
+
+        // Получаем сессии, соответствующие условиям поиска
         const sessions = await this.prisma.session.findMany({
             where: whereCondition,
+            include: {
+                SelectedAnswer: true, // Включаем выбранные ответы для доступа к вопросам
+            },
         });
 
         if (sessions.length === 0) {
             return null;
         }
 
-        // Получаем все вопросы викторины с опциями
+        // Получаем уникальные ID вопросов из выбранных ответов
+        const questionIds = [
+            ...new Set(sessions.flatMap((session) => session.SelectedAnswer.map((sa) => sa.questionId))),
+        ];
+
+        // Получаем вопросы по найденным ID
         const questions = await this.prisma.question.findMany({
-            where: { quizId },
+            where: {
+                id: {
+                    in: questionIds,
+                },
+            },
             include: { options: true },
             orderBy: { position: 'asc' },
         });
@@ -168,12 +181,9 @@ export class StatisticsService {
         const questionsStatistics = await Promise.all(
             questions.map(async (question) => {
                 const maxOptionWeight = Math.max(...question.options.map((option) => option.weight));
-                const selectedAnswers = await this.prisma.selectedAnswer.findMany({
-                    where: {
-                        questionId: question.id,
-                        sessionId: { in: sessions.map((session) => session.id) },
-                    },
-                });
+                const selectedAnswers = sessions
+                    .flatMap((session) => session.SelectedAnswer)
+                    .filter((sa) => sa.questionId === question.id);
 
                 let questionScore = 0;
                 selectedAnswers.forEach((answer) => {
@@ -183,7 +193,8 @@ export class StatisticsService {
                     }
                 });
 
-                const averageScore = (questionScore / (maxOptionWeight * sessions.length)) * 100;
+                const averageScore =
+                    selectedAnswers.length > 0 ? (questionScore / (maxOptionWeight * selectedAnswers.length)) * 100 : 0;
                 totalAverage += averageScore;
 
                 return {
@@ -194,7 +205,7 @@ export class StatisticsService {
             }),
         );
 
-        const overallAverage = totalAverage / questions.length;
+        const overallAverage = questions.length > 0 ? totalAverage / questions.length : 0;
 
         return {
             count: sessions.length,
