@@ -73,7 +73,7 @@ export class StatisticsService {
 
     async calculateAverageScoresByCompany(quizId: string): Promise<any[]> {
         // Список доменов основных компаний
-        const companyDomains = ['ncoc.kz', 'kpo.kz', 'tengizchevroil.com'];
+        const companyDomains = ['ncoc.kz', 'kpo.kz', 'tengizchevroil.com', 'anpz.kz'];
 
         // Получаем все сессии, которые были завершены
         const sessions = await this.prisma.session.findMany({
