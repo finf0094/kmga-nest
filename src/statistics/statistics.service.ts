@@ -75,7 +75,6 @@ export class StatisticsService {
         // Список доменов основных компаний
         const companyDomains = ['ncoc.kz', 'kpo.kz', 'tengizchevroil.com', 'anpz.kz'];
 
-        // Получаем все сессии, которые были завершены
         const sessions = await this.prisma.session.findMany({
             where: { quizId, status: SessionStatus.COMPLETED },
             include: {
@@ -92,12 +91,23 @@ export class StatisticsService {
             },
         });
 
-        // Группируем сессии по доменам email
         const scoresByCompany: Record<string, { totalWeight: number; count: number }> = {};
+
+        const ncocEmailMappings = {
+            'NCOC HSE': ['dana.yerzhanova2@ncoc.kz', 'talgat.kussainov@ncoc.kz', 'snurtaza@mail.ru'],
+            'NCOC Service': ['yerlan.kussainov@ncoc.kz'],
+        };
 
         sessions.forEach((session) => {
             const domain = session.email.email.split('@')[1];
-            const company = companyDomains.includes(domain) ? domain : 'others';
+            let company = companyDomains.includes(domain) ? domain : 'others';
+
+            if (domain === 'ncoc.kz') {
+                const teamName = Object.keys(ncocEmailMappings).find((team) =>
+                    ncocEmailMappings[team].includes(session.email.email.toLowerCase()),
+                );
+                company = teamName || company;
+            }
 
             if (!scoresByCompany[company]) {
                 scoresByCompany[company] = { totalWeight: 0, count: 0 };
