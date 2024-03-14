@@ -74,6 +74,10 @@ export class StatisticsService {
     async calculateAverageScoresByCompany(quizId: string): Promise<any[]> {
         // Список доменов основных компаний
         const companyDomains = ['ncoc.kz', 'kpo.kz', 'tengizchevroil.com', 'anpz.kz'];
+        const ncocEmailMappings = {
+            'NCOC HSE': ['dana.yerzhanova2@ncoc.kz', 'talgat.kussainov@ncoc.kz', 'snurtaza@mail.ru'],
+            'NCOC Service': ['yerlan.kussainov@ncoc.kz'],
+        };
 
         const sessions = await this.prisma.session.findMany({
             where: { quizId, status: SessionStatus.COMPLETED },
@@ -92,11 +96,6 @@ export class StatisticsService {
         });
 
         const scoresByCompany: Record<string, { totalWeight: number; count: number }> = {};
-
-        const ncocEmailMappings = {
-            'NCOC HSE': ['dana.yerzhanova2@ncoc.kz', 'talgat.kussainov@ncoc.kz', 'snurtaza@mail.ru'],
-            'NCOC Service': ['yerlan.kussainov@ncoc.kz'],
-        };
 
         sessions.forEach((session) => {
             const domain = session.email.email.split('@')[1];
