@@ -28,6 +28,14 @@ export class SessionController {
         return { status };
     }
 
+    @Post('/:sessionId/sendCustom')
+    async sendCustomSessionToEmail(
+        @Param('sessionId', ParseUUIDPipe) sessionId: string,
+    ): Promise<{ status: SessionStatus }> {
+        const status = await this.sessionService.sendCustomSessionToEmail(sessionId);
+        return { status };
+    }
+
     @Delete(':id')
     async deleteSession(@Param('id', ParseUUIDPipe) sessionId: string): Promise<void> {
         await this.sessionService.deleteSession(sessionId);

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { CreateSessionDto } from '@mail/dto/create-session.dto';
 
 @Injectable()
 export class MailService {
@@ -14,6 +15,21 @@ export class MailService {
             template,
             context: {
                 url,
+            },
+        });
+    }
+
+    async sendCustomSession(body: CreateSessionDto): Promise<void> {
+        const { email, url, text, title, subject } = body;
+
+        await this.mailerService.sendMail({
+            to: email,
+            template: './new-session-custom',
+            subject,
+            context: {
+                url,
+                title,
+                text,
             },
         });
     }

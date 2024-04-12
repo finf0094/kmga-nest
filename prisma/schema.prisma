@@ -49,6 +49,7 @@ model Quiz {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   title       String
+  emailTitle  String     @default("Dear Customer")
   description String     @default("No Description")
   tags        String[]
   status      QuizStatus @default(DRAFT)

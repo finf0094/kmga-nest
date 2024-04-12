@@ -93,6 +93,37 @@ export class SessionService {
         }
     }
 
+    async sendCustomSessionToEmail(sessionId: string): Promise<SessionStatus> {
+        const session = await this.prisma.session.findUnique({
+            where: { id: sessionId },
+            include: { email: true, quiz: true },
+        });
+
+        if (!session) {
+            return SessionStatus.NOT_STARTED;
+        }
+
+        const sessionUrl = `${this.configService.get('FRONTEND_URL')}/session/${session.id}`;
+
+        try {
+            await this.mailService.sendCustomSession({
+                subject: session.quiz.title,
+                email: session.email.email,
+                title: session.quiz.emailTitle,
+                text: session.quiz.description,
+                url: sessionUrl,
+            });
+            await this.prisma.session.update({
+                where: { id: sessionId },
+                data: { status: SessionStatus.MAIL_SENDED, sendedTime: new Date() },
+            });
+            return SessionStatus.MAIL_SENDED;
+        } catch (error) {
+            console.error('Error sending session URL via email:', error);
+            return SessionStatus.NOT_STARTED;
+        }
+    }
+
     async startQuiz(quizSessionId: string): Promise<Session> {
         let quizSession = await this.prisma.session.findUnique({
             where: { id: quizSessionId },
