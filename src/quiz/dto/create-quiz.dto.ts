@@ -6,6 +6,9 @@ export class CreateQuizDto {
     title: string;
 
     @IsString()
+    emailTitle: string;
+
+    @IsString()
     description: string;
 
     @IsOptional()
