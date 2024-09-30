@@ -53,8 +53,8 @@ model Quiz {
   description String     @default("No Description")
   tags        String[]
   status      QuizStatus @default(DRAFT)
-  questions   Question[] @relation(onDelete: Cascade)
-  Session     Session[]  @relation(onDelete: Cascade)
+  questions   Question[]
+  Session     Session[]
 
   @@map("quizzes")
 }
@@ -63,7 +63,7 @@ model Question {
   id             String           @id @default(uuid())
   title          String
   position       Int              @default(autoincrement())
-  options        Option[]         @relation(onDelete: Cascade)
+  options        Option[]
   quizId         String           @map("quiz_id")
   Quiz           Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
   SelectedAnswer SelectedAnswer[]
@@ -71,6 +71,7 @@ model Question {
   @@index([position])
   @@map("questions")
 }
+
 
 model Option {
   id         String    @id @default(uuid())
