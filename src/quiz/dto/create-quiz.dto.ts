@@ -12,6 +12,10 @@ export class CreateQuizDto {
     description: string;
 
     @IsOptional()
+    @IsString()
+    footer?: string;
+
+    @IsOptional()
     @IsArray()
     @ArrayMinSize(1)
     tags?: string[];

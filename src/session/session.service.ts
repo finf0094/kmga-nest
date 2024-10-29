@@ -112,6 +112,7 @@ export class SessionService {
                 title: session.quiz.emailTitle,
                 text: session.quiz.description,
                 url: sessionUrl,
+                footer: session.quiz?.footer,
             });
             await this.prisma.session.update({
                 where: { id: sessionId },
@@ -123,6 +124,7 @@ export class SessionService {
             return SessionStatus.NOT_STARTED;
         }
     }
+
 
     async startQuiz(quizSessionId: string): Promise<Session> {
         let quizSession = await this.prisma.session.findUnique({

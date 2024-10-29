@@ -51,6 +51,7 @@ model Quiz {
   title       String
   emailTitle  String     @default("Dear Customer")
   description String     @default("No Description")
+  footer      String?
   tags        String[]
   status      QuizStatus @default(DRAFT)
   questions   Question[]

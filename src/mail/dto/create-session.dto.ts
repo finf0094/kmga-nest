@@ -4,4 +4,5 @@ export interface CreateSessionDto {
     subject: string;
     title: string;
     text: string;
+    footer?: string;
 }

@@ -20,7 +20,7 @@ export class MailService {
     }
 
     async sendCustomSession(body: CreateSessionDto): Promise<void> {
-        const { email, url, text, title, subject } = body;
+        const { email, url, text, title, subject, footer} = body;
 
         await this.mailerService.sendMail({
             to: email,
@@ -30,6 +30,7 @@ export class MailService {
                 url,
                 title,
                 text,
+                footer,
             },
         });
     }

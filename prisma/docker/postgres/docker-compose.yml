@@ -17,6 +17,8 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+    env_file:
+      - ../../../.env
 
   pgadmin:
     container_name: pgadmin_container
