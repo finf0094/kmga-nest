@@ -8,7 +8,7 @@ RUN yarn prisma generate
 RUN yarn build
 
 FROM node:18-slim
-RUN apt update && apt install libssl-dev dumb-init -y --no-install-recommends
+RUN apt update && apt install -y libssl-dev dumb-init python3 make g++ --no-install-recommends
 WORKDIR /usr/src/app
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 COPY --chown=node:node --from=build /usr/src/app/.env .env

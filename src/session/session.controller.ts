@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, NotFoundException, ParseUUIDPipe, Get, Delete } from '@nestjs/common';
+import { Body, Controller, Param, Post, NotFoundException, ParseUUIDPipe, Get, Delete, Query } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { SelectedAnswer, Session, SessionStatus } from '@prisma/client';
 import { Public } from '@common/decorators';
@@ -31,8 +31,9 @@ export class SessionController {
     @Post('/:sessionId/sendCustom')
     async sendCustomSessionToEmail(
         @Param('sessionId', ParseUUIDPipe) sessionId: string,
+        @Query('mailMessageId', ParseUUIDPipe) mailMessageId: string,
     ): Promise<{ status: SessionStatus }> {
-        const status = await this.sessionService.sendCustomSessionToEmail(sessionId);
+        const status = await this.sessionService.sendCustomSessionToEmail(sessionId, mailMessageId);
         return { status };
     }
 

@@ -45,17 +45,18 @@ enum Provider {
 }
 
 model Quiz {
-  id          String     @id @default(uuid())
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
-  title       String
-  emailTitle  String     @default("Dear Customer")
-  description String     @default("No Description")
-  footer      String?
-  tags        String[]
-  status      QuizStatus @default(DRAFT)
-  questions   Question[]
-  Session     Session[]
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  title        String
+  emailTitle   String        @default("Dear Customer")
+  description  String        @default("No Description")
+  footer       String?
+  tags         String[]
+  status       QuizStatus    @default(DRAFT)
+  questions    Question[]
+  Session      Session[]
+  mailMessages MailMessage[]
 
   @@map("quizzes")
 }
@@ -72,7 +73,6 @@ model Question {
   @@index([position])
   @@map("questions")
 }
-
 
 model Option {
   id         String    @id @default(uuid())
@@ -119,6 +119,15 @@ model Email {
   Session Session[]
 
   @@map("emails")
+}
+
+model MailMessage {
+  id      String  @id @default(uuid())
+  title   String
+  content String
+  footer  String
+  Quiz    Quiz?   @relation(fields: [quizId], references: [id])
+  quizId  String?
 }
 
 enum QuizStatus {

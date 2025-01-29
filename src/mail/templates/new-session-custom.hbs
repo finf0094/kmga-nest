@@ -1,67 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: left;
-    }
-    .content {
-      max-width: 600px;
-      padding: 10px;
-      text-align: center;
-      margin: 0 auto;
-    }
-    .content a {
-      text-decoration: none;
-    }
-    .content p {
-      color: #000;
-    }
-    .footer {
-      font-size: 12px;
-      color: #000000;
-      line-height: 1.5;
-    }
-    .big {
-      font-size: 14px;
-    }
-    .bold {
-      font-weight: bold;
-    }
-    .green {
-      color: #3DCD58;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      margin: 10px 0;
-      background: #3DCD58;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    @media screen and (max-width: 600px) {
-      .footer {
-        font-size: 10px;
-      }
-      .content {
-        padding: 10px;
-      }
-    }
-  </style>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
+
+        .content {
+            max-width: 600px;
+            padding: 10px;
+            margin: 0 auto;
+            color: black;
+        }
+
+        .content a {
+            text-decoration: none;
+        }
+
+        .big {
+            font-size: 14px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .green {
+            color: #3DCD58;
+        }
+
+        .button {
+            display: table;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background: #3DCD58;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        @media screen and (max-width: 600px) {
+            .footer {
+                font-size: 10px;
+            }
+
+            .content {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="content">
-  <p class="bold big">{{title}}</p>
+    <p class="bold big title">{{title}}</p>
 
-  <p>{{text}}</p>
+    <p>{{{text}}}</p>
 
-  <p>Пожалуйста, уделите момент, чтобы заполнить наш опрос:</p>
-  <a href="{{url}}" class="button" target="_blank">Пройти опрос</a>
+    <a href="{{url}}" class="button" target="_blank">Complete the survey</a>
 
     {{#if footer}}
         <div class="footer">

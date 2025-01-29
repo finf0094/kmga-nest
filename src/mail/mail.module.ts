@@ -24,16 +24,16 @@ import { join } from 'path';
                 },
                 template: {
                     dir: join(__dirname, 'mail', 'templates'),
-                    adapter: new HandlebarsAdapter(), // Или другой адаптер, если нужно
+                    adapter: new HandlebarsAdapter(),
                     options: {
                         strict: true,
                     },
                 },
             }),
-            inject: [ConfigService], // Инжектируем ConfigService
+            inject: [ConfigService],
         }),
     ],
     providers: [MailService],
-    exports: [MailService], // Экспортируем MailService для Dependency Injection
+    exports: [MailService],
 })
 export class MailModule {}

@@ -10,6 +10,7 @@ import { StatisticsModule } from '@statistics/statistics.module';
 import { QuestionModule } from '@question/question.module';
 import { SessionModule } from '@session/session.module';
 import { MailModule } from '@mail/mail.module';
+import { MailMessageModule } from './mail-message/mail-message.module';
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { MailModule } from '@mail/mail.module';
         QuestionModule,
         SessionModule,
         MailModule,
+        MailMessageModule,
     ],
     providers: [
         {

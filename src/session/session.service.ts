@@ -93,38 +93,52 @@ export class SessionService {
         }
     }
 
-    async sendCustomSessionToEmail(sessionId: string): Promise<SessionStatus> {
+    async sendCustomSessionToEmail(sessionId: string, mailMessageId: string): Promise<SessionStatus> {
         const session = await this.prisma.session.findUnique({
             where: { id: sessionId },
-            include: { email: true, quiz: true },
+            include: {
+                email: true,
+                quiz: {
+                    include: {
+                        mailMessages: {
+                            where: { id: mailMessageId },
+                        },
+                    },
+                },
+            },
         });
 
-        if (!session) {
-            return SessionStatus.NOT_STARTED;
+        if (!session || !session.quiz.mailMessages.length) {
+            throw new NotFoundException('Session or MailMessage not found');
         }
 
+        const mailMessage = session.quiz.mailMessages[0];
         const sessionUrl = `${this.configService.get('FRONTEND_URL')}/session/${session.id}`;
 
         try {
             await this.mailService.sendCustomSession({
-                subject: session.quiz.title,
                 email: session.email.email,
-                title: session.quiz.emailTitle,
-                text: session.quiz.description,
                 url: sessionUrl,
-                footer: session.quiz?.footer,
+                subject: mailMessage.title,
+                title: mailMessage.title,
+                text: mailMessage.content,
+                footer: mailMessage.footer,
             });
+
             await this.prisma.session.update({
                 where: { id: sessionId },
-                data: { status: SessionStatus.MAIL_SENDED, sendedTime: new Date() },
+                data: {
+                    status: SessionStatus.MAIL_SENDED,
+                    sendedTime: new Date(),
+                },
             });
+
             return SessionStatus.MAIL_SENDED;
         } catch (error) {
-            console.error('Error sending session URL via email:', error);
+            console.error('Error sending custom message:', error);
             return SessionStatus.NOT_STARTED;
         }
     }
-
 
     async startQuiz(quizSessionId: string): Promise<Session> {
         let quizSession = await this.prisma.session.findUnique({
