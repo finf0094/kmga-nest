@@ -295,6 +295,8 @@ export class StatisticsService {
         return {
             createdAt: session.createdAt,
             feedBack: session.feedBack,
+            sendedTime: session.sendedTime,
+            endTime: session.endTime,
             email: session.email.email,
             quizTitle: session.quiz.title,
             averageWeight, // Добавляем средний вес выбранных ответов
