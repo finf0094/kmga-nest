@@ -29,7 +29,6 @@ export class QuizService {
                 where: {
                     OR: [
                         { title: { contains: search, mode: 'insensitive' } },
-                        { description: { contains: search, mode: 'insensitive' } },
                         ...(search ? [{ tags: { has: search } }] : []),
                     ],
                     ...(status !== null ? { status } : {}),
