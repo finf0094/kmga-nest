@@ -12,6 +12,7 @@ export class MailMessageService {
                 title: dto.title,
                 content: dto.content,
                 footer: dto.footer,
+                btnText: dto.btnText,
                 quizId: dto.quizId,
             },
         });
@@ -32,6 +33,7 @@ export class MailMessageService {
                 title: dto.title,
                 content: dto.content,
                 footer: dto.footer,
+                btnText: dto.btnText,
                 quizId: dto.quizId,
             },
         });

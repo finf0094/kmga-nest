@@ -10,6 +10,9 @@ export class CreateMailMessageDto {
     @IsString()
     content: string;
 
+    @IsString()
+    btnText: string;
+
     @IsOptional()
     @IsString()
     footer?: string;
