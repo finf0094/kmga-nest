@@ -123,6 +123,7 @@ model MailMessage {
   title   String
   content String
   footer  String
+  btnText String  @default("Complete the survey")
   Quiz    Quiz?   @relation(fields: [quizId], references: [id])
   quizId  String?
 }

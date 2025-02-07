@@ -123,6 +123,7 @@ export class SessionService {
                 title: mailMessage.title,
                 text: mailMessage.content,
                 footer: mailMessage.footer,
+                btnText: mailMessage.btnText,
             });
 
             await this.prisma.session.update({
