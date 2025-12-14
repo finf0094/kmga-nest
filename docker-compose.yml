@@ -28,9 +28,9 @@ services:
       JWT_EXP: 10m
       EMAIL_SERVER_HOST: smtp.gmail.com
       EMAIL_SERVER_PORT: 465
-      EMAIL_SERVER_USER: survey.kmga@gmail.com
-      EMAIL_SERVER_PASSWORD: zuxgndeefnqznnqe
-      EMAIL_FROM: survey.kmga@gmail.com
+      EMAIL_SERVER_USER: finf0096@gmail.com
+      EMAIL_SERVER_PASSWORD: usmhuuvjcdnwpkfj
+      EMAIL_FROM: finf0096@gmail.com
       NODE_ENV: development
       GOOGLE_CLIENT_ID: 725470355035-jr1l0u1g1cpqlqnei35erflnep1hpglm.apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET: 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
