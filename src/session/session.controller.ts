@@ -10,7 +10,11 @@ export class SessionController {
     @Public()
     @Get(':sessionId')
     async getSession(@Param('sessionId', ParseUUIDPipe) sessionId: string): Promise<Session> {
+        console.log('@sessionId', sessionId);
+
         const session = await this.sessionService.getSession(sessionId);
+
+        console.log('@session', session);
 
         if (!session) {
             throw new NotFoundException(`Session with ID ${sessionId} not found`);

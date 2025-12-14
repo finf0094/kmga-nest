@@ -116,6 +116,7 @@ export class SessionService {
         const sessionUrl = `${this.configService.get('FRONTEND_URL')}/session/${session.id}`;
 
         try {
+            console.log('Sending custom session email with the following details:');
             await this.mailService.sendCustomSession({
                 email: session.email.email,
                 url: sessionUrl,
@@ -125,6 +126,7 @@ export class SessionService {
                 footer: mailMessage.footer,
                 btnText: mailMessage.btnText,
             });
+            console.log('Custom session email sent successfully');
 
             await this.prisma.session.update({
                 where: { id: sessionId },
