@@ -151,6 +151,7 @@ export class StatisticsService {
         count: number;
         averageScorePercentage: number;
         questions: any[];
+        sessionsByYear: { year: number; totalSessions: number; completedSessions: number }[];
     }> {
         const whereCondition = {
             quizId,
@@ -232,6 +233,39 @@ export class StatisticsService {
             },
         });
 
+        // Получаем статистику по годам
+        const allSessions = await this.prisma.session.findMany({
+            where: { quizId },
+            select: {
+                createdAt: true,
+                status: true,
+            },
+        });
+
+        // Группируем сессии по годам
+        const sessionsByYearMap = new Map<number, { totalSessions: number; completedSessions: number }>();
+
+        allSessions.forEach((session) => {
+            const year = session.createdAt.getFullYear();
+            if (!sessionsByYearMap.has(year)) {
+                sessionsByYearMap.set(year, { totalSessions: 0, completedSessions: 0 });
+            }
+            const yearData = sessionsByYearMap.get(year)!;
+            yearData.totalSessions++;
+            if (session.status === SessionStatus.COMPLETED) {
+                yearData.completedSessions++;
+            }
+        });
+
+        // Преобразуем в массив и сортируем по году
+        const sessionsByYear = Array.from(sessionsByYearMap.entries())
+            .map(([year, data]) => ({
+                year,
+                totalSessions: data.totalSessions,
+                completedSessions: data.completedSessions,
+            }))
+            .sort((a, b) => a.year - b.year);
+
         const overallAverage = questions.length > 0 ? totalAverage / questions.length : 0;
 
         return {
@@ -240,6 +274,7 @@ export class StatisticsService {
             questions: questionsStatistics,
             totalSessions,
             completedSessions,
+            sessionsByYear,
         };
     }
 
