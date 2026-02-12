@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { StatisticsService } from './statistics.service';
 import { Session, SessionStatus } from '@prisma/client';
 import { Public } from '@common/decorators';
@@ -62,5 +62,17 @@ export class StatisticsController {
             throw new NotFoundException(`Statistics for session with id ${sessionId} not found`);
         }
         return statistics;
+    }
+
+    @Post('combined')
+    async getCombinedStatistics(@Body() body: { quizIds: string[] }): Promise<{
+        totalSessions: number;
+        completedSessions: number;
+        sessionsByYear: { year: number; totalSessions: number; completedSessions: number }[];
+    }> {
+        if (!body.quizIds || body.quizIds.length === 0) {
+            throw new NotFoundException('No quiz IDs provided');
+        }
+        return this.statisticsService.calculateCombinedStatistics(body.quizIds);
     }
 }

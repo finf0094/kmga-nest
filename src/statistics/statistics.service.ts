@@ -278,6 +278,56 @@ export class StatisticsService {
         };
     }
 
+    async calculateCombinedStatistics(quizIds: string[]): Promise<{
+        totalSessions: number;
+        completedSessions: number;
+        sessionsByYear: { year: number; totalSessions: number; completedSessions: number }[];
+    }> {
+        const allSessions = await this.prisma.session.findMany({
+            where: {
+                quizId: {
+                    in: quizIds,
+                },
+            },
+            select: {
+                createdAt: true,
+                status: true,
+            },
+        });
+
+        const totalSessions = allSessions.length;
+
+        const completedSessions = allSessions.filter((session) => session.status === SessionStatus.COMPLETED).length;
+
+        const sessionsByYearMap = new Map<number, { totalSessions: number; completedSessions: number }>();
+
+        allSessions.forEach((session) => {
+            const year = session.createdAt.getFullYear();
+            if (!sessionsByYearMap.has(year)) {
+                sessionsByYearMap.set(year, { totalSessions: 0, completedSessions: 0 });
+            }
+            const yearData = sessionsByYearMap.get(year)!;
+            yearData.totalSessions++;
+            if (session.status === SessionStatus.COMPLETED) {
+                yearData.completedSessions++;
+            }
+        });
+
+        const sessionsByYear = Array.from(sessionsByYearMap.entries())
+            .map(([year, data]) => ({
+                year,
+                totalSessions: data.totalSessions,
+                completedSessions: data.completedSessions,
+            }))
+            .sort((a, b) => a.year - b.year);
+
+        return {
+            totalSessions,
+            completedSessions,
+            sessionsByYear,
+        };
+    }
+
     async getSessionStatistics(sessionId: string): Promise<any> {
         const session = await this.prisma.session.findUnique({
             where: { id: sessionId },
