@@ -23,7 +23,7 @@ services:
     container_name: nest-app
     environment:
       DATABASE_URL: postgresql://postgres:12341234@postgres-db:5432/kmgav2
-      FRONTEND_URL: http://5.129.223.49
+      FRONTEND_URL: https://kmgasurvey.kz
       JWT_SECRET: awdnajskfnc238f7iuenc12jd3oddjqo
       JWT_EXP: 10m
       EMAIL_SERVER_HOST: smtp.gmail.com
@@ -36,7 +36,7 @@ services:
       GOOGLE_CLIENT_SECRET: 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
       YANDEX_APP_ID: ee339510a6004af8829679469b8344b8
       YANDEX_APP_SECRET: 3f2325a6c6bb4f2f9f5e0215f68e60fd
-      ALLOWED_ORIGINS: http://5.129.223.49
+      ALLOWED_ORIGINS: https://kmgasurvey.kz
       CACHE_TTL: 30s
     ports:
       - "3000:3000"
